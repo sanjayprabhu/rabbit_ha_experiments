@@ -10,7 +10,7 @@ if [ ! -f /etc/default/docker ]; then
 fi
 
 apt-get update
-apt-get -y install lxc python-pip python-virtualenv
+apt-get -y install lxc python-pip python-virtualenv rabbitmq-server
 
 if (source /etc/default/docker && [[ $DOCKER_OPTS != *lxc* ]]); then
 
@@ -30,6 +30,8 @@ pip install blockade
 
 curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+docker build -t rabbitmq-cluster rabbitmq-cluster/server
 
 SCRIPT
 

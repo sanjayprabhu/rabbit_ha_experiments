@@ -1,0 +1,36 @@
+containers:
+  rabbit1:
+    image: rabbitmq-cluster
+    hostname: rabbit1
+    environment:
+      hostname: rabbit1
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  rabbit2:
+    image: rabbitmq-cluster
+    hostname: rabbit2
+    links:
+      - rabbit1
+    environment:
+      hostname: rabbit2
+      CLUSTERED: true
+      CLUSTER_WITH: rabbit1
+    ports:
+        - "5673:5672"
+        - "15673:15672"
+
+  rabbit3:
+    image: rabbitmq-cluster
+    hostname: rabbit3
+    links:
+      - rabbit1
+      - rabbit2
+    environment:
+      hostname: rabbit3
+      CLUSTERED: true
+      CLUSTER_WITH: rabbit1
+    ports:
+          - "5674:5672"
+          - "15674:15672"
