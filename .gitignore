@@ -1,2 +1,3 @@
 .venv
-docker-rabbitmq-cluster
+.pip_download_cache
+.vagrant
