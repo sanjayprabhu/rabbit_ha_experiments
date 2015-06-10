@@ -1,4 +1,4 @@
-FROM bijukunjummen/rabbitmq-base
+FROM rabbitmq-base
 MAINTAINER Biju Kunjummen biju.kunjummen@gmail.com
 
 ADD rabbitmq.config /etc/rabbitmq/
