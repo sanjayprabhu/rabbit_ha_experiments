@@ -3,30 +3,31 @@ import time
 import argparse
 import pika
 
+QUEUE = 'ha.hello'
 
-def keep_producing(channel, sleep_time=0.5, body='Hello World!'):
+def keep_producing(channel, key, sleep_time=0.5, body='Hello World!'):
   props = pika.BasicProperties(delivery_mode = 2) # make message persistent
   i = 0
   while True:
     text = "%s [%d]" % (body, i)
-    channel.basic_publish(exchange='', routing_key='hello', body=text, properties=props)
+    channel.basic_publish(exchange='', routing_key=key, body=text, properties=props)
     print " [x] Sent '%s'" % text
     i += 1
     time.sleep(sleep_time)
 
-def keep_consuming(channel):
+def keep_consuming(channel, queue):
   def callback(ch, method, properties, body):
     print " [x] Received %r" % (body,)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
   print ' [*] Waiting for messages. To exit press CTRL+C'
-  channel.basic_consume(callback, queue='hello', no_ack=False)
+  channel.basic_consume(callback, queue=queue, no_ack=False)
   channel.start_consuming()
 
-def get_channel(host, port, queue='hello'):
+def get_channel(host, port, queue):
   connection = pika.BlockingConnection(pika.ConnectionParameters(host=args.host, port=args.port))
   channel = connection.channel()
-  channel.queue_declare(queue='hello', durable=True)
+  channel.queue_declare(queue=queue, durable=True)
   return channel
 
 
@@ -37,10 +38,10 @@ if __name__ == '__main__':
   parser.add_argument('--port', type=int, default=5672, help='RabbitMq port')
   args = parser.parse_args()
 
-  channel = get_channel(args.host, args.port)
+  channel = get_channel(args.host, args.port, queue=QUEUE)
 
   if args.mode == 'produce':
-    keep_producing(channel)
+    keep_producing(channel, key=QUEUE)
   elif args.mode == 'consume':
-    keep_consuming(channel)
+    keep_consuming(channel, queue=QUEUE)
 
